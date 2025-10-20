@@ -1,35 +1,21 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [hello, setHello] = useState("...");
+  const [ping, setPing] = useState<string | number>("...");
+
+  useEffect(() => {
+    fetch("/api/hello").then(r => r.text()).then(setHello).catch(() => setHello("error"));
+    fetch("/api/db/ping").then(r => r.json()).then(d => setPing(d.ok)).catch(() => setPing("error"));
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div style={{fontFamily:"system-ui", padding:"24px"}}>
+      <h1>Frontend ✓</h1>
+      <p><b>/api/hello:</b> {hello}</p>
+      <p><b>/api/db/ping:</b> {String(ping)}</p>
+    </div>
+  );
 }
 
-export default App
+export default App;
