@@ -14,6 +14,12 @@ function App() {
       <h1>Frontend ✓</h1>
       <p><b>/api/hello:</b> {hello}</p>
       <p><b>/api/db/ping:</b> {String(ping)}</p>
+
+      <div style={{marginTop:"24px", padding:"8px 12px", border:"1px solid #ddd", borderRadius:8, display:"inline-block", fontSize:12, color:"#555"}}>
+        ver {import.meta.env.VITE_APP_VERSION} ·
+        commit {import.meta.env.VITE_GIT_COMMIT} ·
+        built {import.meta.env.VITE_BUILD_TIME}
+      </div>
     </div>
   );
 }
