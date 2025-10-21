@@ -39,3 +39,10 @@ echo "==> nginx reload"
 sudo nginx -t && sudo systemctl reload nginx
 
 echo "[OK] Frontend deployed (from $BUILD -> $TARGET)"
+# copy plain assets (no bundler)
+if [ -f app.js ]; then
+  sudo cp -f app.js /var/www/myapp/app.js
+fi
+if [ -f style.css ]; then
+  sudo cp -f style.css /var/www/myapp/style.css
+fi
