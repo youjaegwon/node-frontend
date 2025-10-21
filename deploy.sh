@@ -2,9 +2,8 @@
 set -euo pipefail
 
 APP_DIR="/opt/apps/frontend"
-DIST_DIR="$APP_DIR/dist"
-WEB_ROOT="/var/www/myapp"      # Nginx root
-HEALTH_URL="http://127.0.0.1/" # Nginx 통해 확인
+WEB_ROOT="/var/www/myapp"
+HEALTH_URL="http://127.0.0.1/"
 
 cd "$APP_DIR"
 
@@ -16,46 +15,36 @@ GIT_COMMIT="$(git rev-parse --short HEAD || echo unknown)"
 BUILD_TIME="$(date -u +%FT%TZ)"
 APP_VERSION="$(node -p "require('./package.json').version" 2>/dev/null || echo 0.0.0)"
 
-echo "==> install deps (try npm ci, fallback npm install)"
-if npm ci; then
-  true
-else
-  npm install
-fi
+echo "==> npm install/build"
+if npm ci; then true; else npm install; fi
+npm run build || echo "(⚠️ build 단계 건너뜀 — 직접 JS 수정중일 수도 있음)"
 
-echo "==> build"
-npm run build
+echo "==> app.js & index.html 동기화"
+sudo mkdir -p "$WEB_ROOT"
+sudo cp -f "$APP_DIR"/index.html "$WEB_ROOT"/index.html
+sudo cp -f "$APP_DIR"/app.js "$WEB_ROOT"/app.js
 
-echo "==> embed FE version (fe-version.json)"
-cat > "$DIST_DIR/fe-version.json" <<META
+# 버전 JSON (빌드 시간 표시용)
+cat >"$WEB_ROOT/fe-version.json" <<META
 {
-  "name": "frontend",
   "version": "$APP_VERSION",
   "commit": "$GIT_COMMIT",
   "buildTime": "$BUILD_TIME"
 }
 META
 
-echo "==> sync to $WEB_ROOT"
-sudo mkdir -p "$WEB_ROOT"
-# dist 내용을 루트로 동기화(삭제 포함)
-sudo rsync -a --delete "$DIST_DIR"/ "$WEB_ROOT"/
-
-echo "==> permissions"
-sudo chown -R www-data:www-data "$WEB_ROOT"
-
 echo "==> nginx reload"
 sudo nginx -t
 sudo systemctl reload nginx
 
-echo "==> health check (nginx)"
-for i in {1..20}; do
+echo "==> health check"
+for i in {1..10}; do
   if curl -fsS "$HEALTH_URL" >/dev/null; then
-    echo "[OK] Frontend deployed (ver=$APP_VERSION, commit=$GIT_COMMIT, time=$BUILD_TIME)"
+    echo "[OK] Frontend deployed (v$APP_VERSION $GIT_COMMIT)"
     exit 0
   fi
   sleep 0.5
 done
 
-echo "[ERR] Frontend health check failed"
+echo "[WARN] Frontend health check failed (nginx responded non-200)"
 exit 1

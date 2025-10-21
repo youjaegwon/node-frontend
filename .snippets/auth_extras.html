@@ -1,68 +1,3 @@
-<!doctype html><html lang="ko"><head>
-  <!-- AUTH-EXTRAS CSS START -->
-  <style>
-    .modal{ position:fixed; inset:0; background:rgba(0,0,0,.35); }
-    .modal[hidden]{ display:none !important; }
-    .modal:not([hidden]){ display:flex; align-items:center; justify-content:center; }
-  </style>
-  <!-- AUTH-EXTRAS CSS END -->
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Frontend ✓</title>
-<link rel="stylesheet" href="/app.css?v=2">
-</head><body>
-<main class="wrap">
-  <h1>Frontend ✓</h1>
-
-  <div class="row">
-    <button id="open-register">회원가입</button>
-    <button id="open-login">로그인</button>
-    <button id="btn-me">/api/me</button>
-    <button id="btn-refresh">토큰갱신</button>
-    <button id="btn-logout">로그아웃(현재)</button>
-    <button id="btn-logout-all">로그아웃-전체</button>
-  </div>
-
-  <pre id="out"></pre>
-
-  <footer>
-    <span id="fe-ver"></span>
-    <span id="be-ver"></span>
-  </footer>
-</main>
-
-<!-- Register Modal -->
-<div class="modal" id="modal-register" hidden>
-  <div class="dialog">
-    <h3>회원가입</h3>
-    <form id="form-register">
-      <input name="email" type="email" placeholder="email" required>
-      <input name="name"  type="text"  placeholder="name (옵션)">
-      <input name="password" type="password" placeholder="password" required>
-      <div class="row">
-        <button>등록</button>
-        <button type="button" data-close>닫기</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Login Modal -->
-<div class="modal" id="modal-login" hidden>
-  <div class="dialog">
-    <h3>로그인</h3>
-    <form id="form-login">
-      <input name="email" type="email" placeholder="email" required>
-      <input name="password" type="password" placeholder="password" required>
-      <div class="row">
-        <button>로그인</button>
-        <button type="button" data-close>닫기</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script src="/app.js?v=2"></script>
-<!-- inject:auth_extras -->
 <!-- AUTH-EXTRAS START -->
 <section id="auth-extras" style="margin:24px 0;">
   <h2>이메일 인증 / 비밀번호 재설정</h2>
@@ -117,4 +52,3 @@
   </div>
 </div>
 <!-- AUTH-EXTRAS END -->
-</body></html>
