@@ -1,62 +1,58 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Frontend ✓</title>
-  <link rel="stylesheet" href="/app.css?v=1" />
-</head>
-<body>
-  <main class="wrap">
-    <h1>Frontend ✓</h1>
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Frontend ✓</title>
+<link rel="stylesheet" href="/app.css?v=2">
+</head><body>
+<main class="wrap">
+  <h1>Frontend ✓</h1>
 
-    <section class="card">
-      <h2>① 회원가입</h2>
-      <form id="form-register">
-        <input name="email" type="email" placeholder="email" required />
-        <input name="name"  type="text"  placeholder="name (옵션)"/>
-        <input name="password" type="password" placeholder="password" required />
-        <button>Register</button>
-      </form>
-      <pre id="out-register"></pre>
-    </section>
+  <div class="row">
+    <button id="open-register">회원가입</button>
+    <button id="open-login">로그인</button>
+    <button id="btn-me">/api/me</button>
+    <button id="btn-refresh">토큰갱신</button>
+    <button id="btn-logout">로그아웃(현재)</button>
+    <button id="btn-logout-all">로그아웃-전체</button>
+  </div>
 
-    <section class="card">
-      <h2>② 로그인</h2>
-      <form id="form-login">
-        <input name="email" type="email" placeholder="email" required />
-        <input name="password" type="password" placeholder="password" required />
-        <button>Login</button>
-      </form>
-      <div class="tokens">
-        <div>AT: <code id="at">-</code></div>
-        <div>RT: <code id="rt">-</code></div>
-      </div>
-      <pre id="out-login"></pre>
-    </section>
+  <pre id="out"></pre>
 
-    <section class="card">
-      <h2>③ 보호 API</h2>
+  <footer>
+    <span id="fe-ver"></span>
+    <span id="be-ver"></span>
+  </footer>
+</main>
+
+<!-- Register Modal -->
+<div class="modal" id="modal-register" hidden>
+  <div class="dialog">
+    <h3>회원가입</h3>
+    <form id="form-register">
+      <input name="email" type="email" placeholder="email" required>
+      <input name="name"  type="text"  placeholder="name (옵션)">
+      <input name="password" type="password" placeholder="password" required>
       <div class="row">
-        <button id="btn-me">/api/me</button>
-        <button id="btn-refresh">/api/auth/refresh</button>
-        <button id="btn-logout">/api/auth/logout (현재 RT 무효화)</button>
-        <button id="btn-logout-all">/api/auth/logout-all (모든 기기)</button>
+        <button>등록</button>
+        <button type="button" data-close>닫기</button>
       </div>
-      <pre id="out-protected"></pre>
-    </section>
+    </form>
+  </div>
+</div>
 
-    <section class="card">
-      <h2>상태</h2>
-      <div>/api/healthz: <code id="hz">-</code></div>
-      <div>/api/db/ping: <code id="db">-</code></div>
-    </section>
+<!-- Login Modal -->
+<div class="modal" id="modal-login" hidden>
+  <div class="dialog">
+    <h3>로그인</h3>
+    <form id="form-login">
+      <input name="email" type="email" placeholder="email" required>
+      <input name="password" type="password" placeholder="password" required>
+      <div class="row">
+        <button>로그인</button>
+        <button type="button" data-close>닫기</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-    <footer>
-      <span id="fe-ver"></span>
-      <span id="be-ver"></span>
-    </footer>
-  </main>
-  <script src="/app.js?v=1"></script>
-</body>
-</html>
+<script src="/app.js?v=2"></script>
+</body></html>

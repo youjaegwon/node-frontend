@@ -1,87 +1,62 @@
-/** 간단 상태 */
-const state = {
-  at: sessionStorage.getItem('AT') || '',
-  rt: sessionStorage.getItem('RT') || '',
-};
-const el = (id)=>document.getElementById(id);
-const setTokens = ({ accessToken, refreshToken })=>{
-  if (accessToken) { state.at = accessToken; sessionStorage.setItem('AT', accessToken); el('at').textContent = accessToken; }
-  if (refreshToken){ state.rt = refreshToken; sessionStorage.setItem('RT', refreshToken); el('rt').textContent = refreshToken; }
-};
-el('at').textContent = state.at || '-';
-el('rt').textContent = state.rt || '-';
+const $ = s=>document.querySelector(s);
+const out = $("#out");
+const show = (x)=>out.textContent = (typeof x==="string")?x:JSON.stringify(x,null,2);
 
-/** 공통 fetch: 401이면 RT로 자동 재발급 후 1회 재시도 */
-async function apiFetch(path, opts={}) {
-  const url = path.startsWith('/api') ? path : `/api${path}`;
-  const headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
-  if (state.at) headers.Authorization = `Bearer ${state.at}`;
-  const doFetch = () => fetch(url, {...opts, headers});
-  let res = await doFetch();
-  if (res.status === 401 && state.rt) {
-    // refresh 시도
-    const r = await fetch('/api/auth/refresh', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ refreshToken: state.rt })
-    });
-    if (r.ok) {
-      const t = await r.json(); setTokens(t);
-      headers.Authorization = `Bearer ${state.at}`;
-      res = await doFetch(); // 1회 재시도
-    }
-  }
-  return res;
+// 모달
+function openModal(id){ $(id).hidden=false; }
+function closeModal(e){ e.target.closest(".modal").hidden=true; }
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",closeModal));
+$("#open-register").onclick = ()=>openModal("#modal-register");
+$("#open-login").onclick    = ()=>openModal("#modal-login");
+
+// 공통 fetch (쿠키 포함)
+async function api(path, opt={}) {
+  const res = await fetch(path.startsWith("/api")?path:`/api${path}`, {
+    credentials:"include", // ★ 쿠키 보내기
+    headers: Object.assign({"Content-Type":"application/json"}, opt.headers||{}),
+    method: opt.method||"GET",
+    body: opt.body
+  });
+  const text = await res.text();
+  let data; try{ data = JSON.parse(text); }catch{ data = text; }
+  return {res, data};
 }
 
-/** 회원가입 */
-document.getElementById('form-register').addEventListener('submit', async (e)=>{
+// 회원가입
+$("#form-register").addEventListener("submit", async (e)=>{
   e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target).entries());
-  const res = await apiFetch('/auth/register',{method:'POST', body:JSON.stringify(data)});
-  el('out-register').textContent = await res.text();
+  const body = JSON.stringify(Object.fromEntries(new FormData(e.target).entries()));
+  const {res, data} = await api("/auth/register",{method:"POST", body});
+  show(data); closeModal(e);
 });
 
-/** 로그인 */
-document.getElementById('form-login').addEventListener('submit', async (e)=>{
+// 로그인 (쿠키에 AT/RT 세팅됨)
+$("#form-login").addEventListener("submit", async (e)=>{
   e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target).entries());
-  const res = await apiFetch('/auth/login',{method:'POST', body:JSON.stringify(data)});
-  const txt = await res.text();
-  try { const json = JSON.parse(txt); setTokens(json); }
-  catch(_) {}
-  el('out-login').textContent = txt;
+  const body = JSON.stringify(Object.fromEntries(new FormData(e.target).entries()));
+  const {res, data} = await api("/auth/login",{method:"POST", body});
+  show(data); closeModal(e);
 });
 
-/** 보호 API들 */
-el('btn-me').addEventListener('click', async ()=>{
-  const res = await apiFetch('/me'); el('out-protected').textContent = await res.text();
-});
-el('btn-refresh').addEventListener('click', async ()=>{
-  const res = await fetch('/api/auth/refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refreshToken: state.rt})});
-  const txt = await res.text(); try{ setTokens(JSON.parse(txt)); }catch(_){}
-  el('out-protected').textContent = txt;
-});
-el('btn-logout').addEventListener('click', async ()=>{
-  const res = await fetch('/api/auth/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refreshToken: state.rt})});
-  el('out-protected').textContent = await res.text();
-});
-el('btn-logout-all').addEventListener('click', async ()=>{
-  const headers = {'Content-Type':'application/json'};
-  if (state.at) headers.Authorization = `Bearer ${state.at}`;
-  const res = await fetch('/api/auth/logout-all',{method:'POST',headers});
-  el('out-protected').textContent = await res.text();
-});
+// 보호 API들
+$("#btn-me").onclick = async ()=>{
+  const {data} = await api("/me"); show(data);
+};
+$("#btn-refresh").onclick = async ()=>{
+  const {data} = await api("/auth/refresh",{method:"POST", body:"{}"}); show(data);
+};
+$("#btn-logout").onclick = async ()=>{
+  const {data} = await api("/auth/logout",{method:"POST", body:"{}"}); show(data);
+};
+$("#btn-logout-all").onclick = async ()=>{
+  const {data} = await api("/auth/logout-all",{method:"POST", body:"{}"}); show(data);
+};
 
-/** 상태 표시 */
+// 배지
 (async ()=>{
-  try { const a = await fetch('/api/healthz'); el('hz').textContent = (await a.text()) || a.status; } catch{ el('hz').textContent = 'error'; }
-  try { const b = await fetch('/api/db/ping'); el('db').textContent = await b.text(); } catch{ el('db').textContent = 'error'; }
-  // 배지(선택) – 백엔드 /api/version 있으면 표시
-  const fe = document.getElementById('fe-ver'); const be = document.getElementById('be-ver');
-  const build = document.currentScript.src.split('v=')[1]||'0'; fe.textContent = `FE v 0.0.${build}`;
+  $("#fe-ver").textContent = "FE modal+cookie";
   try {
-    const r = await fetch('/api/version'); if (r.ok){ const v = await r.json();
-      be.textContent = `BE ${v.app} v${v.version} · ${v.commit?.slice(0,7)||'unknown'}`;
-    }
+    const r = await fetch("/api/version",{credentials:"include"});
+    if (r.ok){ const v = await r.json(); $("#be-ver").textContent = `BE ${v.app} v${v.version}`; }
   } catch {}
 })();
