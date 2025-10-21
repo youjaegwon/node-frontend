@@ -1,13 +1,62 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Frontend ✓</title>
+  <link rel="stylesheet" href="/app.css?v=1" />
+</head>
+<body>
+  <main class="wrap">
+    <h1>Frontend ✓</h1>
+
+    <section class="card">
+      <h2>① 회원가입</h2>
+      <form id="form-register">
+        <input name="email" type="email" placeholder="email" required />
+        <input name="name"  type="text"  placeholder="name (옵션)"/>
+        <input name="password" type="password" placeholder="password" required />
+        <button>Register</button>
+      </form>
+      <pre id="out-register"></pre>
+    </section>
+
+    <section class="card">
+      <h2>② 로그인</h2>
+      <form id="form-login">
+        <input name="email" type="email" placeholder="email" required />
+        <input name="password" type="password" placeholder="password" required />
+        <button>Login</button>
+      </form>
+      <div class="tokens">
+        <div>AT: <code id="at">-</code></div>
+        <div>RT: <code id="rt">-</code></div>
+      </div>
+      <pre id="out-login"></pre>
+    </section>
+
+    <section class="card">
+      <h2>③ 보호 API</h2>
+      <div class="row">
+        <button id="btn-me">/api/me</button>
+        <button id="btn-refresh">/api/auth/refresh</button>
+        <button id="btn-logout">/api/auth/logout (현재 RT 무효화)</button>
+        <button id="btn-logout-all">/api/auth/logout-all (모든 기기)</button>
+      </div>
+      <pre id="out-protected"></pre>
+    </section>
+
+    <section class="card">
+      <h2>상태</h2>
+      <div>/api/healthz: <code id="hz">-</code></div>
+      <div>/api/db/ping: <code id="db">-</code></div>
+    </section>
+
+    <footer>
+      <span id="fe-ver"></span>
+      <span id="be-ver"></span>
+    </footer>
+  </main>
+  <script src="/app.js?v=1"></script>
+</body>
 </html>

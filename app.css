@@ -1,0 +1,14 @@
+:root { --bg:#111; --fg:#eee; --muted:#9aa; --accent:#40c057; --card:#1b1b1b; --border:#2a2a2a; }
+*{box-sizing:border-box} html,body{height:100%} body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui,AppleSDGothicNeo,Segoe UI,Roboto}
+.wrap{max-width:880px;margin:40px auto;padding:0 16px}
+h1{font-size:48px;margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;margin:18px 0;padding:16px}
+.card h2{margin:0 0 12px}
+form{display:flex;gap:8px;flex-wrap:wrap}
+input{flex:1 1 220px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:#121212;color:var(--fg)}
+button{padding:10px 14px;border:1px solid var(--border);background:#1f1f1f;color:var(--fg);border-radius:8px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+pre{background:#0f0f0f;border:1px solid var(--border);padding:10px;border-radius:8px;overflow:auto;max-height:240px}
+.tokens code{word-break:break-all}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+footer{display:flex;gap:12px;margin-top:26px;color:var(--muted)}
