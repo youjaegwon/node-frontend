@@ -1,12 +1,12 @@
 import React from 'react';
 
-const Main = () => {
+export default function Main() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-4">메인 페이지</h1>
-      <p className="text-gray-600">로그인에 성공했습니다 🎉</p>
+    <div className="min-h-svh bg-neutral-950 text-neutral-100 grid place-items-center">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold mb-2">메인 페이지</h1>
+        <p className="text-neutral-400">🎉 로그인에 성공했습니다.</p>
+      </div>
     </div>
   );
-};
-
-export default Main;
+}

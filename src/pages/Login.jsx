@@ -1,77 +1,84 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
-const Login = () => {
-  const navigate = useNavigate();
+export default function Login() {
+  const nav = useNavigate();
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [pw, setPw] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState('');
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
+    setLoading(true);
+    setMsg('');
     try {
-      const res = await axios.post('/api/auth/login', { email, password }, { withCredentials: true });
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pw }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || '로그인 실패');
 
-      if (res.status === 200) {
-        console.log('✅ 로그인 성공');
-        navigate('/main');
-      }
+      // 성공 → 메인으로
+      nav('/main', { replace: true });
     } catch (err) {
-      console.error(err);
-      setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+      setMsg(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-sm p-8 bg-white shadow-lg rounded-lg">
-        <h2 className="text-2xl font-bold text-center mb-6">로그인</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            placeholder="이메일"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-          <input
-            type="password"
-            placeholder="비밀번호"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white font-semibold py-3 rounded hover:bg-blue-600 transition"
-          >
-            로그인
-          </button>
-        </form>
+    <div className="min-h-svh bg-neutral-950 text-neutral-100 grid place-items-center px-4">
+      <div className="w-full max-w-md">
+        <div className="bg-neutral-900/60 backdrop-blur rounded-2xl p-6 shadow-xl ring-1 ring-white/10">
+          <h1 className="text-2xl font-bold text-center mb-6">로그인</h1>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm mb-1">이메일</label>
+              <input
+                type="email"
+                className="w-full rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 outline-none focus:ring-2 focus:ring-sky-500"
+                placeholder="you@example.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm mb-1">비밀번호</label>
+              <input
+                type="password"
+                className="w-full rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 outline-none focus:ring-2 focus:ring-sky-500"
+                placeholder="••••••••"
+                value={pw}
+                onChange={e => setPw(e.target.value)}
+                required
+              />
+            </div>
+            {msg && (
+              <p className="text-sm text-red-400">{msg}</p>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-lg bg-sky-500 hover:bg-sky-400 disabled:opacity-60 disabled:hover:bg-sky-500 text-black font-semibold py-2 transition"
+            >
+              {loading ? '로그인 중…' : '로그인'}
+            </button>
+          </form>
 
-        <div className="flex justify-between mt-4 text-sm">
-          <button
-            onClick={() => navigate('/signup')}
-            className="text-blue-500 hover:underline"
-          >
-            회원가입
-          </button>
-          <button
-            onClick={() => navigate('/reset-password')}
-            className="text-gray-500 hover:underline"
-          >
-            비밀번호 재설정
-          </button>
+          <div className="flex items-center justify-between mt-4 text-sm">
+            <a href="#" className="text-neutral-400 hover:text-white">회원가입</a>
+            <a href="#" className="text-neutral-400 hover:text-white">비밀번호 재설정</a>
+          </div>
         </div>
+        <p className="text-xs text-neutral-500 text-center mt-4">
+          BE node-backend v0.1.0 • React + Vite • Tailwind
+        </p>
       </div>
     </div>
   );
-};
-
-export default Login;
+}
