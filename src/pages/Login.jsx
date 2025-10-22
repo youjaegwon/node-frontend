@@ -17,10 +17,8 @@ export default function Login() {
     setLoading(true)
     try {
       const out = await api('/auth/login', { method: 'POST', body: { email, password: pw } })
-      // accessToken 쿠키/헤더 방식과 상관없이 백엔드 응답에 맞춰 사용
       const token = out?.accessToken || out?.token
       if (token) localStorage.setItem('accessToken', token)
-      // 성공 애니메이션 → 페이지 전환
       setLeaving(true)
       setTimeout(() => nav('/home', { replace: true }), 260)
     } catch (e) {
@@ -32,24 +30,38 @@ export default function Login() {
 
   return (
     <div className={`w-full max-w-xl animate-fade-in ${leaving ? 'animate-fade-out' : ''}`}>
-      <div className="mb-6 flex items-center gap-2">
-        <div className="brand-dot" />
-        <span className="text-sm text-zinc-400">안전한 로그인</span>
+      {/* 상단 브랜드 로고 */}
+      <div className="flex flex-col items-center mb-8 select-none">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 rounded-full bg-toss-blue flex items-center justify-center shadow-toss">
+            {/* 번개 아이콘 */}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-5 h-5">
+              <path d="M13 2L3 14h7v8l11-12h-8V2z" />
+            </svg>
+          </div>
+          <span className="text-xl font-semibold tracking-tight text-white">
+            YourApp
+          </span>
+        </div>
+        <p className="text-sm text-zinc-400 mt-2">간편하고 안전한 로그인</p>
       </div>
 
       <div className="card">
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
-          다시 만나서 반가워요 <span className="inline-block">👋</span>
+        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-center">
+          로그인
         </h1>
-        <p className="text-zinc-400 mt-3">이메일과 비밀번호로 로그인하세요.</p>
+        <p className="text-zinc-400 text-center mt-2">이메일과 비밀번호를 입력하세요</p>
 
         <form onSubmit={onSubmit} className="mt-7 space-y-4">
           <div>
             <label className="text-sm text-zinc-400">이메일</label>
             <input
               className="input mt-2"
-              type="email" placeholder="you@example.com"
-              value={email} onChange={e => setEmail(e.target.value)} required
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
               autoComplete="email"
             />
           </div>
@@ -61,8 +73,11 @@ export default function Login() {
             </div>
             <input
               className="input mt-2"
-              type="password" placeholder="••••••••"
-              value={pw} onChange={e => setPw(e.target.value)} required
+              type="password"
+              placeholder="••••••••"
+              value={pw}
+              onChange={e => setPw(e.target.value)}
+              required
               autoComplete="current-password"
             />
           </div>
@@ -78,7 +93,7 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="mt-6 text-sm">
+        <div className="mt-6 text-center text-sm">
           <span className="text-zinc-400">처음이신가요? </span>
           <Link to="/register" className="link-muted">회원가입</Link>
         </div>
