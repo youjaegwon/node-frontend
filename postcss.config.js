@@ -1,6 +1,7 @@
+/** Tailwind v4 + Vite */
 export default {
   plugins: {
-    tailwindcss: {},
+    '@tailwindcss/postcss': {},
     autoprefixer: {},
   },
-}
+};
