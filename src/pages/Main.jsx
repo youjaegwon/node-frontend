@@ -1,32 +1,37 @@
-import React from "react";
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { api } from '../lib/api'
 
 export default function Main() {
-  const email = typeof localStorage !== "undefined" ? localStorage.getItem("me_email") : null;
+  const nav = useNavigate()
+
+  async function logoutAll() {
+    try { await api('/auth/logout-all', { method: 'POST' }) } catch {}
+    localStorage.removeItem('accessToken')
+    nav('/', { replace: true })
+  }
 
   return (
-    <div className="min-h-full px-6 py-10">
-      <div className="max-w-2xl mx-auto card p-8 animate-fade-in">
-        <h2 className="text-2xl md:text-3xl font-bold mb-2">메인 페이지</h2>
-        <p className="text-neutral-300 mb-6">
-          로그인에 성공했습니다{email ? `, ${email}님!` : "!"}
-        </p>
+    <div className="w-full max-w-3xl animate-slide-up">
+      <div className="bg-gradient-to-br from-toss-blue/20 to-blue-400/10 border border-white/10 rounded-2xl p-8">
+        <h2 className="text-3xl font-bold">메인 페이지</h2>
+        <p className="text-zinc-300 mt-2">로그인 성공! 필요한 UI를 여기에 구성하세요.</p>
 
-        <div className="flex gap-3">
-          <a className="btn-primary" href="/api-docs" target="_blank" rel="noreferrer">
-            API 문서 열기
-          </a>
+        <div className="mt-6 flex gap-3">
           <button
-            className="btn-ghost"
-            onClick={() => {
-              localStorage.removeItem("accessToken");
-              localStorage.removeItem("refreshToken");
-              window.location.href = "/login";
-            }}
+            onClick={() => nav('/', { replace: true })}
+            className="px-4 py-2 rounded-xl bg-zinc-800 border border-white/10 hover:bg-zinc-700 transition"
           >
-            로그아웃
+            돌아가기
+          </button>
+          <button
+            onClick={logoutAll}
+            className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white transition"
+          >
+            전체 로그아웃
           </button>
         </div>
       </div>
     </div>
-  );
+  )
 }

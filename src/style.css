@@ -2,51 +2,5 @@
 @tailwind components;
 @tailwind utilities;
 
-/* iOS 기본 스타일 제거 (버튼/입력 outline, 색 왜곡 방지) */
-input, button, a, textarea, select {
-  -webkit-appearance: none;
-  appearance: none;
-  outline: none;
-}
-
-/* 스크롤과 배경 */
-html, body, #root {
-  height: 100%;
-}
-body {
-  @apply bg-neutral-950 text-neutral-50 antialiased;
-}
-
-/* 카드 공통 */
-.card {
-  @apply bg-neutral-900/60 backdrop-blur rounded-2xl ring-1 ring-white/10 shadow-soft;
-}
-
-/* 페이지 전환용 래퍼 */
-.page {
-  opacity: 0;
-}
-.page.enter {
-  @apply animate-fade-in-up;
-}
-
-/* 버튼 프리셋 */
-.btn {
-  @apply inline-flex items-center justify-center rounded-xl px-4 py-3 font-medium transition;
-}
-.btn-primary {
-  @apply btn bg-brand-500 hover:bg-brand-600 text-white;
-}
-.btn-ghost {
-  @apply btn bg-white/0 hover:bg-white/5 text-neutral-200;
-}
-
-/* 인풋 프리셋 */
-.input {
-  @apply w-full rounded-xl bg-white/5 ring-1 ring-white/10 px-4 py-3 text-[15px] placeholder:text-neutral-400 focus:ring-2 focus:ring-brand-500;
-}
-
-/* 작은 라벨 링크 */
-.link {
-  @apply text-brand-500 hover:text-brand-600 underline underline-offset-4;
-}
+/* 커스텀(선택) */
+html, body, #root { height: 100%; }
