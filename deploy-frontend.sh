@@ -15,10 +15,10 @@ log "Frontend deploy start"
 # 1) 의존성 설치 (lock 있으면 ci, 없으면 install)
 if [[ -f package-lock.json ]]; then
   log "npm ci (omit=dev)"
-  npm ci --omit=dev || { log "npm ci 실패, npm install 시도"; npm install --omit=dev; }
+  npm ci  || { log "npm ci 실패, npm install 시도"; npm install ; }
 else
   log "npm install (omit=dev)"
-  npm install --omit=dev
+  npm install 
 fi
 
 # 2) 빌드 (vite/기타 자동 감지)

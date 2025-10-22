@@ -1,23 +1,95 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Frontend ✅</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Frontend ✓</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <header>
-    <h1>Frontend ✅</h1>
+  <header class="container">
+    <h1>Frontend <span class="ok">✓</span></h1>
+    <div id="be-banner" class="tagline"></div>
   </header>
-  <main>
-    <div id="app">
-      <p>초기 화면이 정상적으로 보이면 index.html 복구 완료입니다.</p>
-    </div>
+
+  <main class="container">
+    <section class="card">
+      <div class="toolbar">
+        <button data-open="register">회원가입</button>
+        <button data-open="login" class="primary">로그인</button>
+        <button id="btn-me">/api/me</button>
+        <button id="btn-refresh">토큰갱신</button>
+        <button id="btn-logout">로그아웃(현재)</button>
+        <button id="btn-logout-all" class="warning">로그아웃-전체</button>
+      </div>
+
+      <div class="toolbar muted">
+        <button id="btn-email-verify">이메일 인증 메일 보내기</button>
+        <button id="btn-req-reset">비밀번호 재설정 요청</button>
+        <button id="btn-reset-with-token">토큰으로 새 비밀번호 설정</button>
+      </div>
+
+      <pre id="out" class="out"></pre>
+    </section>
   </main>
-  <footer>
-    <small>© MyApp</small>
+
+  <!-- Register Modal -->
+  <dialog id="modal-register">
+    <form method="dialog" id="form-register" class="dialog">
+      <h3>회원가입</h3>
+      <label>이메일 <input name="email" type="email" required /></label>
+      <label>이름 <input name="name" type="text" placeholder="선택" /></label>
+      <label>비밀번호 <input name="password" type="password" required /></label>
+      <menu>
+        <button value="cancel">취소</button>
+        <button value="ok" class="primary">등록</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <!-- Login Modal -->
+  <dialog id="modal-login">
+    <form method="dialog" id="form-login" class="dialog">
+      <h3>로그인</h3>
+      <label>이메일 <input name="email" type="email" required /></label>
+      <label>비밀번호 <input name="password" type="password" required /></label>
+      <menu>
+        <button value="cancel">취소</button>
+        <button value="ok" class="primary">로그인</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <!-- Password Reset Request -->
+  <dialog id="modal-req-reset">
+    <form method="dialog" id="form-req-reset" class="dialog">
+      <h3>비밀번호 재설정 요청</h3>
+      <label>이메일 <input name="email" type="email" required /></label>
+      <menu>
+        <button value="cancel">취소</button>
+        <button value="ok" class="primary">요청</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <!-- Password Reset with Token -->
+  <dialog id="modal-reset-token">
+    <form method="dialog" id="form-reset-token" class="dialog">
+      <h3>토큰으로 비밀번호 설정</h3>
+      <label>토큰 <input name="token" type="text" required /></label>
+      <label>새 비밀번호 <input name="newPassword" type="password" required /></label>
+      <menu>
+        <button value="cancel">취소</button>
+        <button value="ok" class="primary">변경</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <footer class="container foot">
+    <span id="fe-ver"></span>
+    <span id="be-ver"></span>
   </footer>
+
   <script type="module" src="/app.js"></script>
 </body>
 </html>
