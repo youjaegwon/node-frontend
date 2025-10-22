@@ -1,48 +1,72 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd /opt/apps/frontend
+APP_DIR="/opt/apps/frontend"
+WEB_ROOT="/var/www/myapp"
+BUILD_DIR="dist"
 
-echo "==> install deps"
-# CI 환경이면 npm ci, 아니면 npm i (lock 파일 기준)
-if [ -f package-lock.json ]; then
-  npm ci || npm install
+log() { printf "\n\033[1;32m==>\033[0m %s\n" "$*"; }
+fail() { printf "\n\033[1;31mERROR:\033[0m %s\n" "$*" >&2; exit 1; }
+
+cd "$APP_DIR"
+
+log "Frontend deploy start"
+
+# 1) 의존성 설치 (lock 있으면 ci, 없으면 install)
+if [[ -f package-lock.json ]]; then
+  log "npm ci (omit=dev)"
+  npm ci --omit=dev || { log "npm ci 실패, npm install 시도"; npm install --omit=dev; }
 else
-  npm install
+  log "npm install (omit=dev)"
+  npm install --omit=dev
 fi
 
-echo "==> build frontend"
-# 프레임워크별 산출물 이름이 다르니 빌드 후 자동 감지
-npm run build
-
-BUILD=""
-for d in dist build out; do
-  if [ -d "$d" ]; then BUILD="$d"; break; fi
-done
-if [ -z "$BUILD" ]; then
-  echo "✗ 빌드 산출물 디렉터리를 찾지 못했습니다. (dist/build/out 없음)"
-  exit 1
+# 2) 빌드 (vite/기타 자동 감지)
+if jq -e '.scripts.build' package.json >/dev/null 2>&1; then
+  log "npm run build"
+  npm run build
+else
+  fail "package.json scripts.build 가 없습니다. (예: \"build\":\"vite build\")"
 fi
-echo "   -> build dir: $BUILD"
 
-TARGET=/var/www/myapp
-echo "==> sync to $TARGET"
-sudo mkdir -p "$TARGET"
+# 3) 빌드 산출물 검사
+[[ -d "$BUILD_DIR" ]] || fail "$BUILD_DIR 폴더가 없습니다. 빌드 실패한 것 같습니다."
+[[ -f "$BUILD_DIR/index.html" ]] || fail "$BUILD_DIR/index.html 이 없습니다. Vite 빌드 산출물 구조를 확인하세요."
 
-# 중요: 소스 뒤에는 슬래시(/), 타겟 뒤에도 슬래시(/)를 붙여야 내용물이 제대로 동기화됨
-sudo rsync -ah --delete "$BUILD"/ "$TARGET"/
+# 4) 정적 파일 동기화 (덮어쓰기 + 삭제 동기화)
+log "sync -> $WEB_ROOT"
+sudo mkdir -p "$WEB_ROOT"
+sudo rsync -a --delete "$BUILD_DIR"/ "$WEB_ROOT"/
 
-echo "==> fix owner"
-sudo chown -R www-data:www-data "$TARGET"
+# 5) 권한 통일
+log "chown -> www-data"
+sudo chown -R www-data:www-data "$WEB_ROOT"
 
-echo "==> nginx reload"
-sudo nginx -t && sudo systemctl reload nginx
+# 6) 배포 메타 저장(디버깅용)
+COMMIT="$(git -C "$APP_DIR" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+DATE_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+sudo tee "$WEB_ROOT/.deploy-info" >/dev/null <<INFO
+frontend_commit=$COMMIT
+deployed_at=$DATE_UTC
+INFO
+sudo chown www-data:www-data "$WEB_ROOT/.deploy-info"
 
-echo "[OK] Frontend deployed (from $BUILD -> $TARGET)"
-# copy plain assets (no bundler)
-if [ -f app.js ]; then
-  sudo cp -f app.js /var/www/myapp/app.js
+# 7) (선택) gzip/brotli 생성 – nginx가 사용 중이면 이득
+if command -v gzip >/dev/null; then
+  log "static gzip"
+  find "$WEB_ROOT" -type f -name '*.js' -o -name '*.css' -o -name '*.svg' -o -name '*.json' \
+    | xargs -I{} bash -c 'gzip -fk "{}" || true'
 fi
-if [ -f style.css ]; then
-  sudo cp -f style.css /var/www/myapp/style.css
+if command -v brotli >/dev/null; then
+  log "static brotli"
+  find "$WEB_ROOT" -type f -name '*.js' -o -name '*.css' -o -name '*.svg' -o -name '*.json' \
+    | xargs -I{} bash -c 'brotli -f "{}" || true'
 fi
+
+# 8) nginx 재적용
+if command -v nginx >/dev/null; then
+  log "nginx reload"
+  sudo nginx -t && sudo systemctl reload nginx
+fi
+
+log "Frontend deployed ✓ (commit=$COMMIT, time=$DATE_UTC)"
