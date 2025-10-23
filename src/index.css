@@ -2,29 +2,4 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 시스템 다크톤과 유사 (배경/텍스트) */
-:root { color-scheme: dark; }
-html, body, #root { height: 100%; }
-body { @apply bg-zinc-900 text-zinc-100 antialiased; }
-
-/* 입력/버튼 포커스 느낌 개선 */
-.input {
-  @apply w-full bg-zinc-900/60 border border-zinc-700 rounded-xl px-4 py-3
-         placeholder:text-zinc-500 outline-none
-         focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/40 transition;
-}
-.btn-primary {
-  @apply w-full rounded-xl bg-toss-blue text-white font-semibold
-         px-4 py-3 shadow-toss hover:brightness-105 active:brightness-95
-         disabled:opacity-60 disabled:cursor-not-allowed transition;
-}
-.link-muted {
-  @apply text-zinc-400 hover:text-zinc-200 underline underline-offset-4;
-}
-.card {
-  @apply w-full max-w-md bg-zinc-800/60 backdrop-blur rounded-2xl p-6 md:p-8
-         border border-white/5 shadow-xl animate-scale-in;
-}
-.brand-dot {
-  width: 10px; height: 10px; border-radius: 9999px; background: theme('colors.toss.blue');
-}
+/* 프로젝트 전역 커스텀 유틸이 필요하면 여기 @layer utilities 로 추가 가능 */
