@@ -4,9 +4,10 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          500: '#3182f6',
-          600: '#1b64da',
+          500: '#3182f6', // 기존 blue
+          600: '#1b64da', // 기존 hover
         },
+        'toss-blue': '#3182f6', // ✅ focus:border-toss-blue 해결
       },
       boxShadow: {
         brand: '0 8px 24px rgba(49,130,246,0.35)',
