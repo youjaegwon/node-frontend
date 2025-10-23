@@ -6,7 +6,7 @@ import App from './App.jsx'
 import Login from './pages/Login.jsx'
 import Main from './pages/Main.jsx'
 import Register from './pages/Register.jsx'
-import ResetPassword from './pages/ResetPassword.jsx'
+import ResetPassword from './pages/Reset.jsx'
 
 const router = createBrowserRouter([
   { path: '/', element: <Login /> },
