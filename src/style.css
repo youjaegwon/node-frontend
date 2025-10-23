@@ -2,23 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  html, body, #root {
-    @apply h-full bg-neutral-950 text-neutral-100;
-  }
-  h1 { @apply text-3xl font-semibold; }
-}
-
-@layer components {
-  .input {
-    @apply w-full rounded-xl bg-neutral-900/70 border border-neutral-800 px-4 py-3
-           text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2
-           focus:ring-emerald-500 focus:ring-opacity-70 focus:border-emerald-500 focus:border-opacity-70 transition;
-  }
-  .btn-primary {
-    @apply w-full rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3
-           shadow-brand transition disabled:opacity-50 disabled:shadow-none;
-  }
-  .link-muted { @apply text-brand-500 hover:underline; }
-  .error-text { @apply text-sm text-red-400 mt-2; }
+:root {
+  color-scheme: light;
 }
