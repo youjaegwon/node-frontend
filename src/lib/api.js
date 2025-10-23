@@ -1,37 +1,32 @@
-import { toUserMessage } from './errorMap'
-
 export async function api(path, { method='GET', body, token } = {}) {
   try {
     const res = await fetch(`/api${path}`, {
       method,
       headers: {
         'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
       },
       body: body ? JSON.stringify(body) : undefined,
-      credentials: 'include',
-    })
+      credentials: 'include'
+    });
 
-    const ct = res.headers.get('content-type') || ''
-    const data = ct.includes('application/json') ? await res.json() : await res.text()
+    const ct = res.headers.get('content-type') || '';
+    const isJson = ct.includes('application/json');
+    const payload = isJson ? await res.json().catch(() => ({})) : await res.text();
 
-    // 백엔드 표준 {ok:false,code,message} 지원 + HTTP 에러 처리
-    if (!res.ok || (data && data.ok === false)) {
-      const code = (data && data.code) || `HTTP_${res.status}`
-      const rawMsg = (data && data.message) || '요청이 실패했습니다.'
-      const userMsg = toUserMessage(code, rawMsg)
-      const e = new Error(userMsg)
-      e.code = code
-      e.raw = data
-      throw e
+    if (!res.ok) {
+      const code = isJson && payload?.code ? payload.code : (res.status === 404 ? 'E_NOT_FOUND' : 'E_UNKNOWN');
+      const message = isJson && payload?.message ? payload.message : (typeof payload === 'string' ? payload : '');
+      const err = new Error(message || 'Request failed');
+      err.code = code;
+      err.status = res.status;
+      throw err;
     }
-
-    return ct.includes('application/json') ? data : { ok: true, data }
+    return isJson ? payload : { ok:true, data: payload };
   } catch (e) {
-    if (!e.code) {
-      e.code = 'NETWORK_ERROR'
-      e.message = toUserMessage('NETWORK_ERROR')
-    }
-    throw e
+    // 네트워크/비JSON/파싱 실패 모두 여기로
+    const err = e instanceof Error ? e : new Error('Network error');
+    if (!err.code) err.code = 'E_NETWORK';
+    throw err;
   }
 }

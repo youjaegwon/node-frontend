@@ -1,7 +1,8 @@
-import { defineConfig } from "vite";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-// 필요 시 base 경로나 서버 프록시 등을 여기서 설정
 export default defineConfig({
+  plugins: [react()],
   server: { port: 5173 },
-  build: { outDir: "dist" }
-});
+  build: { outDir: 'dist' }
+})

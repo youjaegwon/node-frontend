@@ -2,4 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 프로젝트 전역 커스텀 유틸이 필요하면 여기 @layer utilities 로 추가 가능 */
+/* 토스 느낌의 부드러운 엘리베이션 */
+@layer utilities{
+  .elev-1{ box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 1px 1px rgba(0,0,0,.02) }
+  .elev-2{ box-shadow: 0 8px 24px rgba(0,0,0,.08) }
+}
+
+:root{ color-scheme: light; }
+html,body,#root{ height:100% }
+body{ @apply bg-white text-zinc-900 antialiased; }
+.link{ @apply text-zinc-600 hover:text-zinc-900 underline decoration-zinc-300 underline-offset-4 }
+.btn-primary{ @apply w-full h-12 rounded-xl bg-emerald-500 text-white font-semibold elev-2 active:scale-[0.98] transition; }
+.input{ @apply w-full h-12 rounded-xl border border-zinc-200 bg-white px-4 focus:outline-none focus:ring-4 focus:ring-emerald-100; }
+.page-wrap{ @apply max-w-md mx-auto px-5 pt-10; }

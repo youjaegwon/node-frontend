@@ -1,33 +1,31 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { api } from '../lib/api'
+import React,{useState} from 'react';
+import AuthLayout from '../components/AuthLayout';
+import { api } from '../lib/api';
+import { Link } from 'react-router-dom';
 
-export default function Reset() {
-  const [email, setEmail] = useState('')
-  const [ok, setOk] = useState('')
-  const [err, setErr] = useState('')
-
-  async function submit(e) {
-    e.preventDefault()
-    setErr(''); setOk('')
-    try {
-      await api('/auth/password/reset-request', { method: 'POST', body: { email } })
-      setOk('재설정 링크를 이메일로 보냈습니다.')
-    } catch (e) { setErr(e.message) }
+export default function Reset(){
+  const [email,setEmail] = useState('');
+  const [msg,setMsg] = useState('');
+  const [err,setErr] = useState('');
+  async function handleSubmit(e){
+    e.preventDefault(); setMsg(''); setErr('');
+    try{
+      await api('/auth/reset-request',{method:'POST',body:{email}});
+      setMsg('비밀번호 재설정 메일을 보냈습니다.');
+    }catch(e){ setErr(e.message||'요청을 처리하지 못했습니다.'); }
   }
-
   return (
-    <div className="card">
-      <h1 className="text-2xl font-bold">비밀번호 재설정</h1>
-      <form onSubmit={submit} className="mt-6 space-y-4">
-        <input className="input" placeholder="you@example.com" type="email" value={email} onChange={e=>setEmail(e.target.value)} required />
-        {err && <div className="text-red-400 text-sm">{err}</div>}
-        {ok && <div className="text-emerald-400 text-sm">{ok}</div>}
-        <button className="btn-primary">메일 보내기</button>
+    <AuthLayout title="비밀번호 재설정">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">이메일</label>
+          <input className="input" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" required/>
+        </div>
+        {msg && <p className="text-sm text-emerald-600">{msg}</p>}
+        {err && <p className="text-sm text-red-600">{err}</p>}
+        <button className="btn-primary" type="submit">재설정 링크 보내기</button>
+        <p className="text-center text-sm text-zinc-600"><Link to="/login" className="link">로그인으로 돌아가기</Link></p>
       </form>
-      <div className="mt-4 text-sm">
-        <Link to="/" className="link-muted">로그인으로 돌아가기</Link>
-      </div>
-    </div>
-  )
+    </AuthLayout>
+  );
 }

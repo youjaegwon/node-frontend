@@ -1,37 +1,29 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { api } from '../lib/api'
+import React,{useState} from 'react';
+import Header from '../components/Header';
 
-export default function Main() {
-  const nav = useNavigate()
-
-  async function logoutAll() {
-    try { await api('/auth/logout-all', { method: 'POST' }) } catch {}
-    localStorage.removeItem('accessToken')
-    nav('/', { replace: true })
-  }
+export default function Main(){
+  const [menuOpen,setMenuOpen] = useState(false);
+  const user = { name: '사용자' };
+  function handleLogout(){ localStorage.removeItem('token'); location.href='/login'; }
 
   return (
-    <div className="w-full max-w-3xl animate-slide-up">
-      <div className="bg-gradient-to-br from-toss-blue/20 to-blue-400/10 border border-white/10 rounded-2xl p-8">
-        <h2 className="text-3xl font-bold">메인 페이지</h2>
-        <p className="text-zinc-300 mt-2">로그인 성공! 필요한 UI를 여기에 구성하세요.</p>
-
-        <div className="mt-6 flex gap-3">
-          <button
-            onClick={() => nav('/', { replace: true })}
-            className="px-4 py-2 rounded-xl bg-zinc-800 border border-white/10 hover:bg-zinc-700 transition"
-          >
-            돌아가기
-          </button>
-          <button
-            onClick={logoutAll}
-            className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white transition"
-          >
-            전체 로그아웃
-          </button>
-        </div>
+    <div className="min-h-screen bg-zinc-50">
+      <Header user={user} onLogout={handleLogout} onToggleMenu={()=>setMenuOpen(v=>!v)} />
+      <main className="max-w-3xl mx-auto px-5 py-8">
+        <h2 className="text-2xl font-bold mb-4">메인 화면</h2>
+        <p className="text-zinc-600">로그인 후 진입하는 기본 화면입니다.</p>
+      </main>
+      {/* 간단한 드로어 */}
+      <div className={`fixed inset-0 z-40 ${menuOpen?'':'pointer-events-none'}`}>
+        <div className={`absolute inset-0 bg-black/20 transition ${menuOpen?'opacity-100':'opacity-0'}`} onClick={()=>setMenuOpen(false)} />
+        <aside className={`absolute right-0 top-0 h-full w-72 bg-white border-l border-zinc-100 p-6 transition-transform ${menuOpen?'translate-x-0':'translate-x-full'}`}>
+          <h3 className="font-semibold mb-4">메뉴</h3>
+          <ul className="space-y-3 text-zinc-700">
+            <li><a href="#" className="hover:underline">내 정보</a></li>
+            <li><a href="#" className="hover:underline">환경설정</a></li>
+          </ul>
+        </aside>
       </div>
     </div>
-  )
+  );
 }
