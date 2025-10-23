@@ -5,3 +5,9 @@
 :root {
   color-scheme: light;
 }
+
+/* iOS 입력 확대 방지 및 기본 입력 정렬 */
+input, select, textarea, button { font-size: 16px; }
+
+/* 다크모드 대비 기본 컬러 스킴 힌트 */
+:root { color-scheme: light; }
