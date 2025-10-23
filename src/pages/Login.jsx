@@ -1,103 +1,54 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { api } from '../lib/api';
+import api from '../lib/api';
 
 export default function Login() {
-  const navigate = useNavigate();
+  const nav = useNavigate();
   const [email, setEmail] = useState('');
-  const [password, setPwd] = useState('');
+  const [password, setPassword] = useState('');
   const [err, setErr] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  async function onSubmit(e) {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setErr('');
-    setLoading(true);
     try {
-      const { token, user } = await api('/auth/login', {
-        method: 'POST',
-        body: { email, password },
-      });
-      if (token) {
-        localStorage.setItem('token', token);
-        localStorage.setItem('userName', user?.name || '');
-        navigate('/', { replace: true });
-      } else {
-        setErr('로그인에 실패했습니다.');
-      }
+      const res = await api('/auth/login', { body: { email, password } });
+      // token은 있을 수도/없을 수도 있게 안전 처리
+      if (res.token) localStorage.setItem('token', res.token);
+      // 필요 시 사용자 정보도 저장
+      localStorage.setItem('user', JSON.stringify(res.user));
+      // 메인으로 이동
+      nav('/');
     } catch (e) {
-      setErr(e.message || '이메일 또는 비밀번호를 확인해주세요.');
-    } finally {
-      setLoading(false);
+      setErr(e.message || '요청을 처리하지 못했습니다.');
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-white sm:bg-zinc-50">
-      <div className="max-w-xl mx-auto px-5 pt-10">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="h-8 w-8 rounded-xl bg-emerald-500 shadow-lg shadow-emerald-500/30" />
-          <span className="text-2xl font-semibold text-gray-900">YourApp</span>
+    <div className="mx-auto max-w-md px-6 py-10">
+      <div className="flex items-center gap-3 mb-10">
+        <div className="w-10 h-10 rounded-xl bg-emerald-500"></div>
+        <div className="text-2xl font-semibold">YourApp</div>
+      </div>
+
+      <h1 className="text-4xl font-extrabold mb-4">로그인</h1>
+      <p className="text-zinc-500 mb-8">이메일과 비밀번호로 로그인하세요.</p>
+
+      {err && <div className="mb-4 rounded-lg bg-red-50 text-red-700 px-4 py-3">{err}</div>}
+
+      <form onSubmit={onSubmit} className="space-y-4">
+        <input className="w-full rounded-xl border px-4 py-3" placeholder="you@example.com"
+               value={email} onChange={e=>setEmail(e.target.value)} />
+        <div className="flex items-center gap-3">
+          <input className="flex-1 rounded-xl border px-4 py-3" type="password"
+                 placeholder="비밀번호" value={password} onChange={e=>setPassword(e.target.value)} />
+          <Link to="/reset" className="text-emerald-600">비밀번호 재설정</Link>
         </div>
+        <button className="w-full rounded-xl bg-emerald-600 text-white py-3 font-semibold shadow-lg">로그인</button>
+      </form>
 
-        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">로그인</h1>
-        <p className="mt-3 text-gray-500">이메일과 비밀번호로 로그인하세요.</p>
-
-        <form onSubmit={onSubmit} className="mt-8 space-y-4">
-          <label className="block">
-            <span className="block text-sm font-medium text-gray-700">이메일</span>
-            <input
-              type="email"
-              className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-            />
-          </label>
-
-          <div className="flex items-end justify-between gap-3">
-            <label className="flex-1">
-              <span className="block text-sm font-medium text-gray-700">비밀번호</span>
-              <input
-                type="password"
-                className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
-                value={password}
-                onChange={(e) => setPwd(e.target.value)}
-                autoComplete="current-password"
-                required
-              />
-            </label>
-            <Link
-              to="/reset"
-              className="mb-1 text-sm font-medium text-emerald-600 hover:underline"
-            >
-              비밀번호 재설정
-            </Link>
-          </div>
-
-          {err && (
-            <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
-              {err}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-white font-semibold shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 disabled:opacity-50"
-          >
-            {loading ? '로그인 중…' : '로그인'}
-          </button>
-
-          <p className="text-center text-gray-600 mt-3">
-            처음이신가요?{' '}
-            <Link to="/register" className="text-emerald-600 hover:underline">
-              회원가입
-            </Link>
-          </p>
-        </form>
+      <div className="mt-10 text-center text-zinc-500">
+        처음이신가요? <Link to="/register" className="text-emerald-600">회원가입</Link>
       </div>
     </div>
   );
