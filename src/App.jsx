@@ -1,3 +1,4 @@
+import News from './pages/News';
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Main from './pages/Main.jsx';
@@ -21,6 +22,7 @@ export default function App() {
       <Route path="/" element={authed ? <Main /> : <Navigate to="/login" replace />} />
       {/* 나머지 경로 정리 */}
       <Route path="*" element={<Navigate to={authed ? '/' : '/login'} replace />} />
+      <Route path="/news" element={<News />} />
     </Routes>
   );
 }
