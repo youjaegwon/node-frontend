@@ -21,7 +21,7 @@ export default function Header({ user }) {
           {/* Left: Logo */}
           <Link to="/" className="flex items-center gap-2">
             <span className="inline-block h-8 w-8 rounded-lg bg-emerald-500 shadow-sm" />
-            <span className="text-lg font-semibold text-zinc-900">YourApp</span>
+            <span className="text-lg font-semibold text-zinc-900">JCoin</span>
           </Link>
 
           {/* Right: hamburger */}

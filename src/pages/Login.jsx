@@ -38,7 +38,7 @@ export default function Login() {
         {/* 로고 */}
         <div className="flex items-center gap-3 mb-8">
           <div className="w-9 h-9 rounded-2xl bg-emerald-500 shadow-lg" />
-          <span className="font-semibold text-2xl text-zinc-800">YourApp</span>
+          <span className="font-semibold text-2xl text-zinc-800">JCoin</span>
         </div>
 
         <h1 className="text-5xl font-extrabold tracking-tight text-zinc-900">로그인</h1>
