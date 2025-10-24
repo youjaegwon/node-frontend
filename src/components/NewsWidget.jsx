@@ -1,76 +1,93 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-function Magnifier({ className = '' }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className={className}>
-      <path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.47 6.47 0 0 0 1.57-4.23A6.5 6.5 0 1 0 9.5 15a6.47 6.47 0 0 0 4.23-1.57l.27.28v.79L20.5 21 22 19.5 15.5 14Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/>
-    </svg>
-  );
-}
+import api from '../lib/api';
 
 /**
- * items: [{ title, source, image, link, publishedAt }]
- * 최대 4개 미리보기 + '뉴스 더보기' 버튼
+ * 메인 뉴스 위젯 (4개만 표시)
+ * - 백엔드: GET /news (배열: { title, link, source, image })
+ * - 카드 클릭 시 기사 새 탭 열기
+ * - 하단 버튼: /news 이동
  */
-export default function NewsWidget({ items = [] }) {
-  const top4 = items.slice(0, 4);
+export default function NewsWidget() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await api('/news');
+        const list = Array.isArray(r?.data)
+          ? r.data.slice(0, 4) // 4개만 표시
+          : Array.isArray(r)
+          ? r.slice(0, 4)
+          : [];
+        setItems(list);
+      } catch (e) {
+        console.error('news fetch error', e);
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   return (
-    <section className="rounded-2xl p-4 bg-white shadow-sm ring-1 ring-zinc-100">
-      <div className="flex items-center gap-2 mb-3">
-        <Magnifier className="w-5 h-5 text-emerald-600" />
-        <h2 className="text-base font-semibold">코인 뉴스</h2>
+    <section className="mt-5">
+      <div className="mb-2 flex items-center justify-between">
+        <h2 className="text-[18px] font-semibold text-zinc-900">코인 뉴스</h2>
       </div>
 
-      <ul className="flex flex-col gap-3">
-        {top4.map((n, i) => (
-          <li key={n.link || i}>
+      {loading ? (
+        <div className="space-y-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-[80px] rounded-2xl bg-zinc-100 animate-pulse"
+            />
+          ))}
+        </div>
+      ) : items.length === 0 ? (
+        <p className="text-zinc-500 text-sm">표시할 뉴스가 없습니다.</p>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {items.map((n, i) => (
             <a
-              href={n.link || '#'}
+              key={n.link || i}
+              href={n.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between gap-3 rounded-xl px-3 py-3 ring-1 ring-zinc-100 hover:bg-zinc-50 transition"
+              className="block rounded-2xl border border-zinc-100 shadow-sm hover:shadow transition overflow-hidden"
             >
-              <div className="flex items-center gap-3 min-w-0">
-                <Magnifier className="w-4 h-4 text-zinc-400 shrink-0" />
+              <div className="p-4 flex items-start gap-3">
                 <div className="flex-1 min-w-0">
-                  {/* 제목은 줄바꿈 허용해서 한눈에 다 보이게 */}
                   <div className="text-[15px] font-medium text-zinc-900 whitespace-normal">
-                    {n.title || '제목 없음'}
+                    {n.title_ko || n.title || '제목 없음'}
                   </div>
                   <div className="text-xs text-zinc-500 mt-1">
-                    {n.source || ''}{' '}
-                    {n.publishedAt
-                      ? new Date(n.publishedAt).toLocaleString('ko-KR', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })
-                      : ''}
+                    {n.source || ''}
                   </div>
                 </div>
+                {n.image ? (
+                  <img
+                    src={n.image}
+                    alt=""
+                    className="w-16 h-16 rounded-md object-cover shrink-0 bg-zinc-100"
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-md bg-zinc-100 shrink-0" />
+                )}
               </div>
-
-              {n.image ? (
-                <img
-                  src={n.image}
-                  alt=""
-                  className="w-14 h-14 rounded-lg object-cover shrink-0"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="w-14 h-14 rounded-lg bg-zinc-200 shrink-0" />
-              )}
             </a>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      )}
 
       <div className="mt-4">
         <Link
           to="/news"
-          className="block w-full text-center rounded-xl px-4 py-2.5 text-sm font-medium
-                     bg-zinc-100 hover:bg-zinc-200 text-zinc-800 transition"
+          className="block w-full text-center rounded-xl bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-300 transition py-3 text-[15px] text-zinc-700"
         >
           뉴스 더보기
         </Link>
