@@ -40,7 +40,7 @@ export default function MarketsWidget() {
   }, []);
 
   return (
-    <section className="max-w-[700px] mx-auto px-5 py-2">
+    <section className="w-full">
       <div className="bg-white rounded-xl shadow-sm ring-1 ring-zinc-100">
         {/* 헤더 */}
         <div className="flex items-baseline justify-between px-4 pt-4">
